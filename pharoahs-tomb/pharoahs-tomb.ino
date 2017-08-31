@@ -148,7 +148,7 @@ void loop() {
   while(1){     //RA   
     delay(250);
     if(DEBUG)Serial.print("ra sequence.");
-    for(int i=0; i>3; i++){
+    for(int i=0; i<3; i++){
       if(DEBUG)Serial.print("ra "); if(DEBUG)Serial.print(i);if(DEBUG)Serial.println(" check.");
       if(! (sensor_in[i] == 0)){
         accumulator[i] = accumulator[i] + (analogRead(sensor_in[i]) - accumulator[i])/3;
