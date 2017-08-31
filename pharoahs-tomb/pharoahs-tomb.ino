@@ -116,11 +116,11 @@ void loop() {
       if(total/4 >= LDR_TARGET_COLUMN) break;
       if(readings_index >= 4){
         readings_index = 0;
-    }else{
-      if(DEBUG)Serial.print("readings_index: ");if(DEBUG)Serial.println(readings_index);
-      readings_index++;
-    }
-    delay(250);
+      }else{
+        if(DEBUG)Serial.print("readings_index: ");if(DEBUG)Serial.println(readings_index);
+        readings_index++;
+      }
+      delay(250);
     }//end while
     delay(250);
     if(DEBUG)Serial.println("exit");
@@ -129,11 +129,11 @@ void loop() {
     digitalWrite(maglocks[i], HIGH); //OR LOW idk
     audioPlayer.playFullFile("column2.mp3");  
   }//end for
-  
+
   //JAR LIFT FROM CUPBOARD. RA SETUP
   while(digitalRead(IN_ANUBIS) == LOW){ //just chill till anubis canopic is lifted
+  delay(250);
   }
-    
     audioPlayer.playFullFile("team.mp3");
     audioPlayer.playFullFile("column1.mp3");
     digitalWrite(RELAY_LIGHTS_MAIN,LOW);
@@ -144,15 +144,17 @@ void loop() {
   int accumulator[] = {0,0,0};
   int sensor_in[] = {IN_RA_1, IN_RA_2, IN_RA_3};    
   while(1){     //RA   
-  delay(250);
-  if(DEBUG)Serial.print("ra");
+    delay(250);
+    if(DEBUG)Serial.print("ra sequence.");
     for(int i=0; i>3; i++){
       if(DEBUG)Serial.print("ra "); if(DEBUG)Serial.print(i);if(DEBUG)Serial.println(" check.");
-      if(sensor_in[i] != 0){
-        if(DEBUG)Serial.print(i);
-        if(DEBUG)Serial.println(" detected");
+      if(! (sensor_in[i] == 0)){
         accumulator[i] = accumulator[i] + (analogRead(sensor_in[i]) - accumulator[i])/3;
-//        if(DEBUG)Serial.print("");
+        if(DEBUG)Serial.print("accumulator for sensor ");
+        if(DEBUG)Serial.print(i);
+        if(DEBUG)Serial.print(": ");
+        if(DEBUG)Serial.println(accumulator[i]);
+                       
         if(accumulator[i]>LDR_TARGET_RA){
           if(DEBUG)Serial.print("light: ");
           if(DEBUG)Serial.println(i);
@@ -163,8 +165,9 @@ void loop() {
     }//end for
     int active_sensors = 0;
     for(int i = 0; i < 3 ; i++) active_sensors = active_sensors + sensor_in[i];
-    if(!active_sensors){if(DEBUG)Serial.print("out");
-    break;
+    if(!active_sensors){
+      if(DEBUG)Serial.print("out");
+      break;
     }
   }//end while
   
@@ -180,10 +183,15 @@ void loop() {
   while(resetRoom = 0){
     if(radio.available(0)){ //is this redundant?
       radio.read(&canopicRead, sizeof(canopicRead));
+      Serial.println(canopicRead);
       if(canopicRead == 11){
         digitalWrite(RELAY_DOOR_EXIT,HIGH);
         audioPlayer.playFullFile("cup.mp3");
-        delay(180000);
+        Serial.println("Exit. countdown to loop begun");
+        for(int i=180; i>0; i--){ 
+          Serial.println(i);
+          delay(1000);
+        }
         // resetRoom = 1;
         break;
       }//end if
@@ -191,45 +199,3 @@ void loop() {
     delay(250);
   }//end while
 }//end loop()
-
-/*
-boolean columnTrigger(int sensor_in, int threshold_value ){
-  int readings[] = {0,0,0,0};
-  int index = 0;
-  while(1){
-    readings[index] = analogRead(sensor_in);
-    int total = 0;
-    for(int i = 0; i > 4; i++) total = total + readings[i];
-    if(total/4 >= threshold_value) return true;
-    if(index >= 4){index = 0;}else{index++;}
-  }
-  return false;
-}
-*/
-Adafruit_VS1053_FilePlayer audioSetup(int rst_in, int cs_in, int dcs_in) {
-
-  //AUDIO BOARD SETUP:
-  Adafruit_VS1053_FilePlayer audioPlayer = Adafruit_VS1053_FilePlayer(rst_in, cs_in, dcs_in, DREQ, SDCS);
-
-  //check status of audio board and sd card:
-  if (! audioPlayer.begin()){
-    if(DEBUG)Serial.println(F("error: Audio Board FAILED"));
-    while (1);
-  }
-  if(DEBUG)Serial.println(F("Audio Board Initialised"));
-
-  if(! SD.begin(SDCS)){
-    if(DEBUG)Serial.println(F("error: SD Card FAILED"));
-    while (1);
-  }
-  if(DEBUG)Serial.println(F("SD Present"));
-  
-  audioPlayer.setVolume(0,0);
-  audioPlayer.useInterrupt(VS1053_FILEPLAYER_PIN_INT);
-
-  //audioPlayer.playFullFile("bootup.mp3");
-  if(DEBUG)Serial.println(F("AUDIO SUCCESS"));
-
-  return audioPlayer;
-  
-}
