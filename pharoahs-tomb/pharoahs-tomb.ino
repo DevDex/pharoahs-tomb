@@ -19,13 +19,15 @@
 #define DEBUG 1
 #define LDR_TARGET_COLUMN 500
 #define LDR_TARGET_RA 70
-// pin definitions
 
-int IN_LEFT_COL = A0;
-int IN_RIGHT_COL = A1;
-#define IN_RA_1 A2
-#define IN_RA_2 A3
-#define IN_RA_3 A4
+// pin definitions
+//analogs (defined post internal hidden conversion to facilitate use)
+#define IN_LEFT_COL 54
+#define IN_RIGHT_COL 55
+#define IN_RA_1 56
+#define IN_RA_2 57
+#define IN_RA_3 58
+
 #define IN_ANUBIS 30
 
 #define RELAY_LIGHTS_MAIN 31
