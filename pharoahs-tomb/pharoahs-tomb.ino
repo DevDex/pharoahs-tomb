@@ -14,7 +14,7 @@
 #include <Adafruit_VS1053.h>
 #include "RF24.h"
 
-#define DEBUG 1
+#define DEBUG 0
 
 #define LDR_TARGET_COLUMN 500
 #define LDR_TARGET_RA 300
