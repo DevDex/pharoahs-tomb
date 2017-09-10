@@ -39,10 +39,6 @@
 #define BO_RST 9
 #define BO_CS 10
 #define BO_DCS 8
-#define SH_RST -1
-#define SH_CS 7
-#define SH_DCS 6
-
 #define SDCS 4 //sd card chip select
 #define DREQ 3 //dreq for background music playing
 
@@ -64,14 +60,15 @@ void setup() {
     if(DEBUG)Serial.println(F("error: Audio Board FAILED"));
     while (1);
   }
+  if(DEBUG)Serial.println(F("Audio Board Initialised"));
   if(! SD.begin(SDCS)){
     if(DEBUG)Serial.println(F("error: SD Card FAILED"));
     while (1);
   }
   if(DEBUG)Serial.println(F("SD Present"));
-  audioPlayer.setVolume(10,10);
+  audioPlayer.setVolume(0,0);
   audioPlayer.useInterrupt(VS1053_FILEPLAYER_PIN_INT);
-  if(DEBUG)Serial.println(F("Audio Board Initialised"));
+  audioPlayer.playFullFile("opentone.mp3");
   if(DEBUG)Serial.println("RADIO Starting...");
   radio.begin();
   radio.setChannel(120);
@@ -89,7 +86,7 @@ void loop() {
   digitalWrite(RELAY_DOOR_COL_L, LOW);
   digitalWrite(RELAY_DOOR_COL_R, LOW);
   digitalWrite(RELAY_DOOR_EXIT, LOW);
-  audioPlayer.playFullFile("rasuccess.mp3");
+  audioPlayer.playFullFile("radone.mp3");
 
   int columns[] = {IN_LEFT_COL, IN_RIGHT_COL};
   int maglocks[] = {RELAY_DOOR_COL_L, RELAY_DOOR_COL_R};
@@ -118,15 +115,15 @@ void loop() {
     delay(250);
     if(DEBUG)Serial.println("exit"); if(DEBUG)Serial.print("magunlocked: "); if(DEBUG)Serial.println(maglocks[i]);
     digitalWrite(maglocks[i], HIGH); //OR LOW idk
-    audioPlayer.playFullFile("stonegrindl.mp3");  
+    audioPlayer.playFullFile("grindl.mp3");  
   }//end for
 
   while(digitalRead(IN_ANUBIS) == LOW) delay(250); //just chill till anubis canopic is lifted
-  audioPlayer.playFullFile("archaeologistfarewell.mp3");
-  audioPlayer.playFullFile("stonegrindl.mp3");
+  audioPlayer.playFullFile("archaeox.mp3");
+  audioPlayer.playFullFile("grindl.mp3");
   digitalWrite(RELAY_LIGHTS_MAIN,LOW);
   delay(4000);
-  audioPlayer.playFullFile("anubisangry.mp3");
+  audioPlayer.playFullFile("anuangry.mp3");
   digitalWrite(RELAY_LIGHTS_SPOT,HIGH);
   
   int accumulator[] = {0,0,0};
@@ -141,7 +138,7 @@ void loop() {
         if(DEBUG)Serial.print("accumulator for sensor "); if(DEBUG)Serial.print(i); if(DEBUG)Serial.print(": "); if(DEBUG)Serial.println(accumulator[i]);
         if(accumulator[i]>LDR_TARGET_RA){
           if(DEBUG)Serial.print("light: "); if(DEBUG)Serial.println(i);
-          audioPlayer.playFullFile("rasuccess.mp3");
+          audioPlayer.playFullFile("radone.mp3");
           sensor_in[i]= 0;
         }//end if
       }//end if
@@ -155,14 +152,14 @@ void loop() {
   }//end while
   
   digitalWrite(RELAY_LIGHTS_SPOT,LOW);
-  audioPlayer.playFullFile("stonegrinds.mp3");
+  audioPlayer.playFullFile("grinds.mp3");
   digitalWrite(RELAY_LIGHTS_MAIN,HIGH);
 
   int canopicRead = 0;
   int resetRoom = 0;
   while(1){
     if(DEBUG)Serial.println("radio loop");
-    if(radio.available(0)){ //is this redundant?
+    if(radio.available()){ //is this redundant?
       if(DEBUG)Serial.println("radio available");
       radio.read(&canopicRead, sizeof(canopicRead));
       if(DEBUG)Serial.println(canopicRead);
