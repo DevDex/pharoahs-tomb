@@ -122,7 +122,7 @@ void loop() {
   audioPlayer.playFullFile("archaeox.mp3");
   audioPlayer.playFullFile("grindl.mp3");
   digitalWrite(RELAY_LIGHTS_MAIN,LOW);
-  delay(4000);
+  delay(2000);
   audioPlayer.playFullFile("anuangry.mp3");
   digitalWrite(RELAY_LIGHTS_SPOT,HIGH);
   
